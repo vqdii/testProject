@@ -10,4 +10,4 @@ from LaptopFinder import LaptopFinder
 #print(df.loc[[5,10,15],['company', 'inches']])
 
 finder = LaptopFinder()
-finder.find_suitable_laptops("Dota 2")
+finder.find_suitable_laptops("Half-Life 2")
