@@ -1,32 +1,32 @@
+import re
+
 import pandas as pd
 
 
 class LaptopFinder:
-    def __init__(self):
-        self.games_data = 5
-        self.lappsto = 6
+    def __init__(self, games_file, laptops_file):
+        self.games_data = pd.read_csv(games_file)
+        self.laptops = pd.read_csv(laptops_file)
 
     def parse_ram(self, ram_str):
         try:
-            return int(ram_str.upper().replace('GB', '').strip())
+            if ram_str.upper().find('MB') != -1:
+                return float(ram_str.replace('MB', ''))/1024
+            if ram_str.upper().find('TB') != -1:
+                return float(ram_str.replace(r'ТВ.*', ''))*1024
+                return int(ram_str[:ram_str.upper().find('GB')])
         except ValueError:
             return None
 
+    def get_game_specs(self, game_name):
+        game_spec = self.games_data[self.games_data['name'].str.lower() == game_name.lower()]
+        return game_spec.iloc[0] if not game_spec.empty else None
+
     def extract_info(self, cpu_str):
-        if "Intel Core i3" in cpu_str:
-            series = "Intel Core i3"
-        elif "Intel Core i5" in cpu_str:
-            series = "Intel Core i5"
-        elif "Intel Core i7" in cpu_str:
-            series = "Intel Core i7"
-        else:
-            return None, None
-        parts = cpu_str.split()
-        for part in parts:
-            if part.isdigit() and len(part) >= 4:
-                generation = int(part[0])
-                return series, generation
-            return series, None
+        match = re.match(r'(Intel Core [iI]\d)\s+(\d+)', cpu_str)
+        if match:
+            return match.group(1), int(match.group(2)[:1])
+        return None, None
 
     def cpu_filter(self, row, game_cpu_series_list):
         for cpu_series, required_gen in game_cpu_series_list:
@@ -41,7 +41,7 @@ class LaptopFinder:
     def find_suitable_laptops(self, game_name):
 
         game_spec = self.get_game_specs(game_name)
-        if not game_spec:
+        if game_spec.empty:
             print(f"Гру з назвою '{game_name}' не знайдено")
             return
 
@@ -63,14 +63,11 @@ class LaptopFinder:
 
         game_gpus = [gpu.strip().lower() for gpu in game_gpu.split(' or ')]
 
-        laptops_df = self.get_all_laptops()
-        laptops_df['ram_gb'] = laptops_df['ram'].apply(self.parse_ram)
-        laptops_df['gpu'] = laptops_df['gpu'].str.lower()
-        laptops_df[['cpu_series', 'cpu_gen']] = laptops_df['cpu'].apply(
-            lambda x: pd.Series(self.extract_info(x))
-        )
+        #форматирование столбца, потом вынести в другую функцию
+        self.laptops['ram'].str.replace('GB', '', regex=True)
+        self.laptops['ram'] = pd.to_numeric(self.laptops['ram'], errors='coerce')
 
-        filtered_df = laptops_df[laptops_df['ram_gb'] >= game_ram_gb]
+        filtered_df = self.laptops[self.laptops['ram'].replace('GB', '') >= game_ram_gb]
 
         filtered_df = filtered_df[
             filtered_df['gpu'].apply(lambda gpu: any(gpu_name in gpu for gpu_name in game_gpus))
