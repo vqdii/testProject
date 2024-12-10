@@ -1,4 +1,6 @@
 import pandas as pd
+
+
 from LaptopFinder import LaptopFinder
 
 #df=pd.read_csv('laptops.csv', index_col='laptop_id', sep=',')
@@ -10,6 +12,5 @@ from LaptopFinder import LaptopFinder
 #print(df.loc[[5,10,15],['company', 'inches']])
 
 
-finder = LaptopFinder('games_data.csv','laptops.csv')
-finder.find_suitable_laptops("Dota 2")
-
+finder = LaptopFinder('test_games.csv','laptops.csv')
+finder.find_suitable_laptops("Testttt")
