@@ -21,6 +21,8 @@ class LaptopFinder:
 
     def parse_ram(self, ram_str):
         try:
+            if isinstance(ram_str, float):
+                ram_str = str(ram_str)
             if ram_str.upper().find('MB') != -1:
                 return int(ram_str[:ram_str.upper().find('MB')])
                 #return float(ram_str.replace('MB', ''))/1024
@@ -99,5 +101,6 @@ class LaptopFinder:
             return filtered_df['product'].head(5).to_list()
         else:
             return []
+
 
 

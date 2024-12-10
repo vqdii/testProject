@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="../../static/style.css">
     <title>Пошук ноутбуків</title>
     </head>
     <body>
@@ -11,6 +11,20 @@
                 <input type="text" name="game" placeholder="Введіть назву гри" required>
                 <button type="submit">Пошук</button>
             </form>
+
+            {% if laptops %}
+            <h2>Підходящі ноутбуки:</h2>
+            <ul>
+                {% for laptop in laptops %}
+                <li>{{ laptop }}</li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <!-- Если список ноутбуков пуст, показываем сообщение -->
+            {% if request.method == "POST" %}
+            <p>Не знайдено ноутбуків, які відповідають вимогам.</p>
+            {% endif %}
+            {% endif %}
         </div>
     </body>
 </html>

@@ -11,8 +11,10 @@ finder = LaptopFinder('games_data.csv', 'laptops.csv')
 def index():
     laptops = []
     if request.method == "POST":
+        print("POST-запрос получен!")
         # Получаем название игры от пользователя
         game_name = request.form.get("game")
+        print(game_name)
         if game_name:
             # Вызываем метод для поиска подходящих ноутбуков
             laptops = finder.find_suitable_laptops(game_name)
