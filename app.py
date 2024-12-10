@@ -16,7 +16,7 @@ def index():
         if game_name:
             # Вызываем метод для поиска подходящих ноутбуков
             laptops = finder.find_suitable_laptops(game_name)
-    return render_template("index.html", laptops=laptops)
+    return render_template("client/index.html", laptops=laptops)
 
 if __name__ == "__main__":
     app.run(debug=True)
